@@ -1,0 +1,126 @@
+
+
+
+dotnet add package Microsoft.EntityFrameworkCore -v 5.0.13 
+dotnet add package Microsoft.EntityFrameworkCore.tools -v 5.0.13
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer -v 5.0.13
+dotnet add package Microsoft.EntityFrameworkCore.Design -v 5.0.13
+
+Scaffold-DbContext "Server=172.22.10.31;Database=DatabaseTraining;Trusted_Connection=True;"Microsoft.EntityFrameworkCore.SqlServer -OutputDir Model
+
+UserID=abc;Password=def;
+
+dotnet tool install --global dotnet-ef
+dotnet ef dbcontext scaffold "Server=172.22.10.31;Database=DatabaseTraining;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models 
+
+If u have changed something in table then u need to force the below command:
+
+dotnet ef dbcontext scaffold "Server=172.22.10.31;Database=DatabaseTraining;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models --force
+
+MApper***************
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 8.0.0
+
+var config = new MapperConfiguration(cfg => {​​​​​​    cfg.CreateMap<Employee, User>();
+
+IMapper mapper = config.CreateMapper();var source=objEmployee;var dest = mapper.Map<Employee, User>(source);
+
+
+*******************
+using System;
+using EFexample.Models;
+namespace EFexample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            FarePortalContext db=new FarePortalContext();
+            Employee employee=new Employee();
+            employee.Eid=100;
+            employee.Ename="Vandhana";
+            employee.Salary=56800;
+            employee.City="Delhi";
+            employee.Doj=Convert.ToDateTime("2/3/2020");
+            db.Employees.Add(employee);
+            db.SaveChanges();
+            foreach(var item in db.Employees)
+            {
+                Console.WriteLine(item.Eid+" "+item.Ename+" "+item.Salary+" "+item.Doj+" "+item.City);
+            }
+           
+        }
+    }
+}
+
+
+
+
+
+https://www.microsoft.com/en-in/sql-server/sql-server-downloads
+https://linqsamples.com/
+https://stackoverflow.com/questions/1745691/linq-when-to-use-singleordefault-vs-firstordefault-with-filtering-criteria
+
+
+
+
+************************************************************************************************************************************
+
+EF MVC
+
+
+dotnet add package Microsoft.EntityFrameworkCore -v 5.0.13 
+dotnet add package Microsoft.EntityFrameworkCore.tools -v 5.0.13
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer -v 5.0.13
+dotnet add package Microsoft.EntityFrameworkCore.Design -v 5.0.13
+dotnet ef dbcontext scaffold "Server=172.22.10.31;Database=DatabaseTraining;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+dotnet tool install -g dotnet-aspnet-codegenerator --version 5.0.2
+dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design --version 5.0.2
+
+
+dotnet aspnet-codegenerator view getallAcc List -m SundaramSbaccount(name of table in Model) -outDir Views\SundaramSbaccount --useDefaultLayout --referenceScriptLibraries
+
+dotnet aspnet-codegenerator view Create Create -m SundaramSbaccount -outDir Views\SundaramSbaccount --useDefaultLayout --referenceScriptLibraries
+
+
+dotnet aspnet-codegenerator view Edit Edit -m SundaramSbaccount -outDir Views\SundaramSbaccount --useDefaultLayout --referenceScriptLibraries
+
+dotnet aspnet-codegenerator view Delete Delete -m SundaramSbaccount -outDir Views\SundaramSbaccount --useDefaultLayout --referenceScriptLibraries
+
+
+
+1. Controller  
+private readonly FarePortalContext db;
+       public EmployeeController(FarePortalContext _db)
+       {
+            db=_db;
+       }
+
+2. startup.cs  
+services.AddDbContext<DatabaseTrainingContext>(options =>
+       options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+
+3. Appsettings.json
+ "ConnectionStrings": {
+    "DefaultConnection": "Server=172.22.10.31;Database=DatabaseTraining;Trusted_Connection=True;"
+  },
+
+
+
+
+
+
+public IActionResult Edit(int id)
+        {
+            Employee employee=db.Employees.Find(id);
+            return View(employee);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Employee e)
+        {
+            db.Employees.Update(e);	
+            db.SaveChanges();
+            return RedirectToAction("getallEmps");
+        }
+
